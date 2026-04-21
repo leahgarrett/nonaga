@@ -1,0 +1,12 @@
+{
+  "name": "Aggressive Cluster",
+  "description": "Rush own pawns together, use discs to help self",
+  "heuristics": {
+    "cluster_own": 0.9,
+    "block_opponent": 0.2,
+    "prefer_center": 0.3,
+    "disc_help_self": 0.8,
+    "disc_hurt_opp": 0.2,
+    "randomness": 0.05
+  }
+}

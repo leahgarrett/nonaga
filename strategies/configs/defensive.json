@@ -1,0 +1,12 @@
+{
+  "name": "Defensive Disruptor",
+  "description": "Prioritises disrupting opponent over clustering own pawns",
+  "heuristics": {
+    "cluster_own": 0.3,
+    "block_opponent": 0.9,
+    "prefer_center": 0.4,
+    "disc_help_self": 0.3,
+    "disc_hurt_opp": 0.8,
+    "randomness": 0.05
+  }
+}
