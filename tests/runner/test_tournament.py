@@ -81,8 +81,9 @@ def test_run_tournament_random_baseline_matchups():
     fn = _random_fn()
     strategies = {"aggressive": fn, "defensive": fn, "random": fn}
     result = run_tournament(strategies, n_games=2)
-    # round-robin: 3 pairs (a-d, a-r, d-r); baseline adds 2 more (a-r, d-r)
-    assert len(result["matchups"]) == 5
+    # round-robin non-random pairs: 1 (aggressive vs defensive)
+    # baseline pairs: 2 (aggressive vs random, defensive vs random)
+    assert len(result["matchups"]) == 3
     # both non-random strategies appear as strategy_a in baseline matchups
     baseline = [m for m in result["matchups"] if m["strategy_b"] == "random"]
     names = {m["strategy_a"] for m in baseline}

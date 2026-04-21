@@ -78,9 +78,11 @@ def run_tournament(strategies: dict[str, Callable], n_games: int = 100) -> dict:
     names = list(strategies.keys())
     matchups = []
 
-    # Round-robin pairs
+    # Round-robin pairs (non-random strategies only)
     for i, name_a in enumerate(names):
         for name_b in names[i + 1:]:
+            if name_a == "random" or name_b == "random":
+                continue
             matchups.append(run_matchup(
                 name_a, strategies[name_a],
                 name_b, strategies[name_b],
