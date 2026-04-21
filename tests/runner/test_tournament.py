@@ -39,7 +39,7 @@ def test_run_matchup_has_summary_keys():
 
 def test_load_all_strategies_includes_random():
     strategies = load_all_strategies("strategies/configs")
-    assert any(s["name"] == "random" for s in strategies)
+    assert "random" in strategies
 
 
 def test_load_all_strategies_includes_all_jsons():
@@ -47,14 +47,47 @@ def test_load_all_strategies_includes_all_jsons():
     assert len(strategies) >= 3
 
 
+def test_load_all_strategies_returns_callables():
+    strategies = load_all_strategies("strategies/configs")
+    for name, fn in strategies.items():
+        assert callable(fn), f"strategy '{name}' is not callable"
+
+
 def test_run_tournament_has_matchups():
     fn = _random_fn()
-    strategies = [
-        {"name": "a", "display_name": "A", "description": "", "fn": fn},
-        {"name": "b", "display_name": "B", "description": "", "fn": fn},
-    ]
+    strategies = {"a": fn, "b": fn}
     result = run_tournament(strategies, n_games=2)
+    # round-robin: 1 pair; both non-random vs random: but neither is "random",
+    # so no baseline matchups added (no "random" key present)
     assert len(result["matchups"]) == 1
+
+
+def test_run_tournament_has_run_id():
+    fn = _random_fn()
+    strategies = {"a": fn, "b": fn}
+    result = run_tournament(strategies, n_games=2)
+    assert "run_id" in result
+    assert "T" in result["run_id"]
+
+
+def test_run_tournament_strategies_is_list_of_names():
+    fn = _random_fn()
+    strategies = {"a": fn, "b": fn}
+    result = run_tournament(strategies, n_games=2)
+    assert result["strategies"] == ["a", "b"]
+
+
+def test_run_tournament_random_baseline_matchups():
+    fn = _random_fn()
+    strategies = {"aggressive": fn, "defensive": fn, "random": fn}
+    result = run_tournament(strategies, n_games=2)
+    # round-robin: 3 pairs (a-d, a-r, d-r); baseline adds 2 more (a-r, d-r)
+    assert len(result["matchups"]) == 5
+    # both non-random strategies appear as strategy_a in baseline matchups
+    baseline = [m for m in result["matchups"] if m["strategy_b"] == "random"]
+    names = {m["strategy_a"] for m in baseline}
+    assert "aggressive" in names
+    assert "defensive" in names
 
 
 def test_save_and_load_results():
@@ -69,3 +102,13 @@ def test_save_and_load_results():
 def test_load_latest_results_none_when_empty():
     with tempfile.TemporaryDirectory() as tmpdir:
         assert load_latest_results(tmpdir) is None
+
+
+def test_load_latest_results_returns_most_recent():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        older = {"run_id": "2026-04-20T10-00-00", "label": "older"}
+        newer = {"run_id": "2026-04-21T12-00-00", "label": "newer"}
+        save_results(older, tmpdir)
+        save_results(newer, tmpdir)
+        result = load_latest_results(tmpdir)
+        assert result["label"] == "newer"

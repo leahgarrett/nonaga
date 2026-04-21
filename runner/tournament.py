@@ -1,24 +1,21 @@
 from __future__ import annotations
 import os
 import statistics
+from datetime import datetime
+from typing import Callable
 from engine.game import play_game
 from strategies.engine import load_strategy, make_strategy_fn
 
 
-def load_all_strategies(configs_dir: str) -> list[dict]:
-    strategies = []
+def load_all_strategies(configs_dir: str) -> dict[str, Callable]:
+    strategies = {}
     for filename in sorted(os.listdir(configs_dir)):
         if not filename.endswith(".json"):
             continue
         path = os.path.join(configs_dir, filename)
         config = load_strategy(path)
         name = filename[:-5]
-        strategies.append({
-            "name": name,
-            "display_name": config["name"],
-            "description": config.get("description", ""),
-            "fn": make_strategy_fn(config["heuristics"]),
-        })
+        strategies[name] = make_strategy_fn(config["heuristics"])
     return strategies
 
 
@@ -77,20 +74,33 @@ def run_matchup(
     }
 
 
-def run_tournament(strategies: list[dict], n_games: int = 100) -> dict:
+def run_tournament(strategies: dict[str, Callable], n_games: int = 100) -> dict:
+    names = list(strategies.keys())
     matchups = []
-    for i, s_a in enumerate(strategies):
-        for s_b in strategies[i + 1:]:
+
+    # Round-robin pairs
+    for i, name_a in enumerate(names):
+        for name_b in names[i + 1:]:
             matchups.append(run_matchup(
-                s_a["name"], s_a["fn"],
-                s_b["name"], s_b["fn"],
+                name_a, strategies[name_a],
+                name_b, strategies[name_b],
                 n_games=n_games,
             ))
+
+    # Baseline matchups: every non-random strategy vs random
+    random_fn = strategies.get("random")
+    if random_fn is not None:
+        for name in names:
+            if name != "random":
+                matchups.append(run_matchup(
+                    name, strategies[name],
+                    "random", random_fn,
+                    n_games=n_games,
+                ))
+
     return {
-        "strategies": [
-            {"name": s["name"], "display_name": s["display_name"], "description": s["description"]}
-            for s in strategies
-        ],
+        "run_id": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "strategies": names,
         "games_per_matchup": n_games,
         "matchups": matchups,
     }
