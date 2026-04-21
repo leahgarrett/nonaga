@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Head-to-Head Matrix</h1>
+<p class="meta">Win rate of the row strategy vs column strategy. Click a cell to replay games.</p>
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      {% for name in names %}<th>{{ name }}</th>{% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in names %}
+    <tr>
+      <th>{{ row }}</th>
+      {% for col in names %}
+        {% if row == col %}
+          <td class="self">—</td>
+        {% else %}
+          {% set val = cells[row][col] %}
+          {% if val is none %}
+            <td class="self">—</td>
+          {% elif val > 55 %}
+            <td class="matrix-cell win" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%</td>
+          {% elif val < 45 %}
+            <td class="matrix-cell loss" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%</td>
+          {% else %}
+            <td class="matrix-cell near" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%</td>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
