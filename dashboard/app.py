@@ -1,6 +1,5 @@
 # dashboard/app.py
 from __future__ import annotations
-import statistics
 from flask import Flask, render_template, jsonify
 
 
@@ -33,7 +32,7 @@ def _leaderboard(data: dict) -> list[dict]:
     rows = []
     for name in names:
         t = total[name] or 1
-        vrt = vs_random_total[name] or 0
+        vrt = vs_random_total[name]
         rows.append({
             "name": name,
             "display_name": name,
