@@ -33,7 +33,7 @@ def is_adjacent(a: tuple[int, int], b: tuple[int, int]) -> bool:
 
 def is_connected(discs: frozenset[tuple[int, int]]) -> bool:
     if not discs:
-        return True
+        return True  # vacuous: empty set is trivially connected
     start = next(iter(discs))
     visited: set[tuple[int, int]] = {start}
     queue = [start]
