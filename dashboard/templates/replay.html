@@ -32,10 +32,12 @@
 <script>
   const SA = "{{ matchup.strategy_a }}";
   const SB = "{{ matchup.strategy_b }}";
-  const INIT_ID = {{ matchup.summary.best_a_win_game_id if matchup.summary.best_a_win_game_id is not none else 0 }};
+  const INIT_ID = {{ matchup.summary.best_a_win_game_id if matchup.summary.best_a_win_game_id is not none else "null" }};
   document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.querySelector(".gbtn.active");
-    loadGame(INIT_ID, btn);
+    if (INIT_ID !== null) {
+      const btn = document.querySelector(".gbtn.active");
+      loadGame(INIT_ID, btn);
+    }
   });
 </script>
 {% endblock %}
