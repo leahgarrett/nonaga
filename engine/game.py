@@ -38,3 +38,71 @@ def initial_state(first_player: str = "red") -> GameState:
         current_player=first_player,
         last_placed_disc=None,
     )
+
+
+from engine.board import is_adjacent
+
+
+def apply_move(state: GameState, move: Move) -> GameState:
+    if state.current_player == "red":
+        pawns = list(state.red_pawns)
+        pawns[move.pawn_index] = move.pawn_to
+        red_pawns, black_pawns = tuple(pawns), state.black_pawns
+    else:
+        pawns = list(state.black_pawns)
+        pawns[move.pawn_index] = move.pawn_to
+        red_pawns, black_pawns = state.red_pawns, tuple(pawns)
+
+    return GameState(
+        discs=(state.discs - {move.disc_from}) | {move.disc_to},
+        red_pawns=red_pawns,
+        black_pawns=black_pawns,
+        current_player="black" if state.current_player == "red" else "red",
+        last_placed_disc=move.disc_to,
+    )
+
+
+def _connected(pawns: tuple[tuple[int, int], ...]) -> bool:
+    a, b, c = pawns
+    ab, bc, ac = is_adjacent(a, b), is_adjacent(b, c), is_adjacent(a, c)
+    return (ab and bc) or (ab and ac) or (bc and ac)
+
+
+def check_win(state: GameState) -> str | None:
+    if _connected(state.red_pawns):
+        return "red"
+    if _connected(state.black_pawns):
+        return "black"
+    return None
+
+
+def play_game(
+    red_strategy: Callable[[GameState], Move],
+    black_strategy: Callable[[GameState], Move],
+    first_player: str = "red",
+    max_turns: int = 200,
+) -> dict:
+    from engine.moves import legal_moves
+    state = initial_state(first_player=first_player)
+    moves_log: list[dict] = []
+
+    for turn in range(max_turns):
+        winner = check_win(state)
+        if winner:
+            return {"winner": winner, "turns": turn, "moves": moves_log, "first_player": first_player}
+
+        strategy = red_strategy if state.current_player == "red" else black_strategy
+        move = strategy(state)
+        moves_log.append({
+            "turn": turn + 1,
+            "player": state.current_player,
+            "pawn_index": move.pawn_index,
+            "pawn_from": list(move.pawn_from),
+            "pawn_to": list(move.pawn_to),
+            "disc_from": list(move.disc_from),
+            "disc_to": list(move.disc_to),
+        })
+        state = apply_move(state, move)
+
+    winner = check_win(state)
+    return {"winner": winner or "draw", "turns": max_turns, "moves": moves_log, "first_player": first_player}
