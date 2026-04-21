@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Strategy Leaderboard</h1>
+<p class="meta">{{ data.games_per_matchup }} games per matchup &middot; {{ data.strategies|length }} strategies</p>
+<table>
+  <thead>
+    <tr><th>Rank</th><th>Strategy</th><th>vs Random</th><th>Overall win %</th><th>Avg turns</th></tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td><a href="/matrix">{{ row.display_name }}</a></td>
+      <td>{% if row.vs_random is not none %}{{ row.vs_random }}%{% else %}—{% endif %}</td>
+      <td>
+        <div class="bar-wrap"><div class="bar" style="width:{{ row.win_rate }}%"></div></div>
+        {{ row.win_rate }}%
+      </td>
+      <td>{{ row.avg_turns }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
