@@ -24,9 +24,7 @@ function replayToTurn(moves, turnIndex) {
   const pawns = { red: initialPawns().red.map(p=>[...p]), black: initialPawns().black.map(p=>[...p]) };
   for (let i = 0; i < turnIndex && i < moves.length; i++) {
     const m = moves[i];
-    const color = (m.pawn_index % 2 === 0) ? "red" : "black";
-    const slot = Math.floor(m.pawn_index / 2);
-    pawns[color][slot] = [...m.pawn_to];
+    pawns[m.player][m.pawn_index] = [...m.pawn_to];
     discs.delete(m.disc_from.join(","));
     discs.add(m.disc_to.join(","));
   }
