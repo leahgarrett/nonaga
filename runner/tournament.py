@@ -19,15 +19,26 @@ def load_all_strategies(configs_dir: str) -> dict[str, Callable]:
     return strategies
 
 
+def _progress(label: str, done: int, total: int, round_num: int, total_rounds: int) -> None:
+    width = 30
+    filled = int(width * done / total)
+    bar = "=" * filled + "-" * (width - filled)
+    print(f"\rRound {round_num}/{total_rounds}: {label} [{bar}] {done}/{total}", end="", flush=True)
+
+
 def run_matchup(
     name_a: str, fn_a,
     name_b: str, fn_b,
     n_games: int = 100,
+    round_num: int = 1,
+    total_rounds: int = 1,
 ) -> dict:
     games = []
     half = n_games // 2
+    label = f"{name_a} vs {name_b}"
 
     for i in range(n_games):
+        _progress(label, i, n_games, round_num, total_rounds)
         if i < half:
             # a plays red (first), b plays black
             result = play_game(fn_a, fn_b, first_player="red")
@@ -50,6 +61,9 @@ def run_matchup(
             "turns": result["turns"],
             "moves": result["moves"],
         })
+
+    _progress(label, n_games, n_games, round_num, total_rounds)
+    print()
 
     a_wins_games = sorted(
         [g for g in games if g["winner"] == name_a], key=lambda g: g["turns"]
@@ -76,29 +90,22 @@ def run_matchup(
 
 def run_tournament(strategies: dict[str, Callable], n_games: int = 100) -> dict:
     names = list(strategies.keys())
+    non_random = [n for n in names if n != "random"]
+
+    pairs = [(a, b) for i, a in enumerate(non_random) for b in non_random[i + 1:]]
+    baseline_pairs = [(n, "random") for n in non_random] if "random" in names else []
+    all_pairs = pairs + baseline_pairs
+    total_rounds = len(all_pairs)
+
     matchups = []
-
-    # Round-robin pairs (non-random strategies only)
-    for i, name_a in enumerate(names):
-        for name_b in names[i + 1:]:
-            if name_a == "random" or name_b == "random":
-                continue
-            matchups.append(run_matchup(
-                name_a, strategies[name_a],
-                name_b, strategies[name_b],
-                n_games=n_games,
-            ))
-
-    # Baseline matchups: every non-random strategy vs random
-    random_fn = strategies.get("random")
-    if random_fn is not None:
-        for name in names:
-            if name != "random":
-                matchups.append(run_matchup(
-                    name, strategies[name],
-                    "random", random_fn,
-                    n_games=n_games,
-                ))
+    for round_num, (name_a, name_b) in enumerate(all_pairs, start=1):
+        matchups.append(run_matchup(
+            name_a, strategies[name_a],
+            name_b, strategies[name_b],
+            n_games=n_games,
+            round_num=round_num,
+            total_rounds=total_rounds,
+        ))
 
     return {
         "run_id": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
