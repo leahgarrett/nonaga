@@ -91,6 +91,9 @@ def play_game(
         if winner:
             return {"winner": winner, "turns": turn, "moves": moves_log, "first_player": first_player}
 
+        if not legal_moves(state):
+            return {"winner": "draw", "turns": turn, "moves": moves_log, "first_player": first_player}
+
         strategy = red_strategy if state.current_player == "red" else black_strategy
         move = strategy(state)
         moves_log.append({
