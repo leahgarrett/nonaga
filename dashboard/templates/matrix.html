@@ -21,11 +21,11 @@
           {% if val is none %}
             <td class="self">—</td>
           {% elif val > 55 %}
-            <td class="matrix-cell win" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%<div class="cell-turns">{{ avg_turns[row][col] }}t</div></td>
+            <td class="matrix-cell win" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%<div class="cell-turns">↓{{ min_turns[row][col] }} ~{{ avg_turns[row][col] }} ↑{{ max_turns[row][col] }}</div></td>
           {% elif val < 45 %}
-            <td class="matrix-cell loss" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%<div class="cell-turns">{{ avg_turns[row][col] }}t</div></td>
+            <td class="matrix-cell loss" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%<div class="cell-turns">↓{{ min_turns[row][col] }} ~{{ avg_turns[row][col] }} ↑{{ max_turns[row][col] }}</div></td>
           {% else %}
-            <td class="matrix-cell near" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%<div class="cell-turns">{{ avg_turns[row][col] }}t</div></td>
+            <td class="matrix-cell near" onclick="location.href='/matchup/{{ row }}/{{ col }}'">{{ val }}%<div class="cell-turns">↓{{ min_turns[row][col] }} ~{{ avg_turns[row][col] }} ↑{{ max_turns[row][col] }}</div></td>
           {% endif %}
         {% endif %}
       {% endfor %}

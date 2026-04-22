@@ -80,6 +80,8 @@ def run_matchup(
             "a_wins": a_wins,
             "b_wins": b_wins,
             "draws": draws,
+            "min_turns": min(g["turns"] for g in games),
+            "max_turns": max(g["turns"] for g in games),
             "avg_turns": round(statistics.mean(g["turns"] for g in games), 1),
             "best_a_win_game_id": a_wins_games[0]["game_id"] if a_wins_games else None,
             "median_a_win_game_id": a_wins_games[len(a_wins_games) // 2]["game_id"] if a_wins_games else None,

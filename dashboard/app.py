@@ -47,14 +47,17 @@ def _matrix(data: dict) -> dict:
     names = data["strategies"]
     cells: dict[str, dict[str, float | None]] = {a: {b: None for b in names} for a in names}
     avg_turns: dict[str, dict[str, float | None]] = {a: {b: None for b in names} for a in names}
+    min_turns: dict[str, dict[str, float | None]] = {a: {b: None for b in names} for a in names}
+    max_turns: dict[str, dict[str, float | None]] = {a: {b: None for b in names} for a in names}
     for m in data["matchups"]:
         a, b = m["strategy_a"], m["strategy_b"]
         n = len(m["games"]) or 1
         cells[a][b] = round(m["summary"]["a_wins"] / n * 100, 1)
         cells[b][a] = round(m["summary"]["b_wins"] / n * 100, 1)
-        avg_turns[a][b] = m["summary"]["avg_turns"]
-        avg_turns[b][a] = m["summary"]["avg_turns"]
-    return {"names": names, "cells": cells, "avg_turns": avg_turns}
+        avg_turns[a][b] = avg_turns[b][a] = m["summary"]["avg_turns"]
+        min_turns[a][b] = min_turns[b][a] = m["summary"].get("min_turns")
+        max_turns[a][b] = max_turns[b][a] = m["summary"].get("max_turns")
+    return {"names": names, "cells": cells, "avg_turns": avg_turns, "min_turns": min_turns, "max_turns": max_turns}
 
 
 def create_app(tournament_data: dict) -> Flask:
@@ -67,7 +70,8 @@ def create_app(tournament_data: dict) -> Flask:
     @app.route("/matrix")
     def matrix():
         m = _matrix(tournament_data)
-        return render_template("matrix.html", names=m["names"], cells=m["cells"], avg_turns=m["avg_turns"])
+        return render_template("matrix.html", names=m["names"], cells=m["cells"],
+                               avg_turns=m["avg_turns"], min_turns=m["min_turns"], max_turns=m["max_turns"])
 
     @app.route("/matchup/<strategy_a>/<strategy_b>")
     def matchup(strategy_a: str, strategy_b: str):
