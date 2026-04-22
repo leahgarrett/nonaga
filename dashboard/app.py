@@ -1,6 +1,7 @@
 # dashboard/app.py
 from __future__ import annotations
-from flask import Flask, render_template, jsonify
+import logging
+from flask import Flask, render_template, jsonify, request
 
 
 def _leaderboard(data: dict) -> list[dict]:
@@ -62,6 +63,18 @@ def _matrix(data: dict) -> dict:
 
 def create_app(tournament_data: dict) -> Flask:
     app = Flask(__name__)
+    logging.basicConfig(level=logging.DEBUG)
+
+    @app.before_request
+    def log_request():
+        app.logger.debug(f"→ {request.method} {request.path}")
+
+    @app.errorhandler(404)
+    def not_found(e):
+        app.logger.warning(f"404: {request.path}")
+        return render_template("error.html",
+            message=f"Page not found: {request.path}",
+            hint="Go back to the leaderboard and try again."), 404
 
     @app.route("/")
     def leaderboard():

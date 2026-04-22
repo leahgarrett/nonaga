@@ -39,9 +39,12 @@ def cmd_serve(result_path: str | None, port: int) -> None:
         print("No results found. Run a tournament first: python3 run.py")
         sys.exit(1)
 
+    print(f"Loaded result: {data.get('run_id')} — {len(data.get('strategies', []))} strategies, {len(data.get('matchups', []))} matchups")
+    print(f"Strategies: {data.get('strategies')}")
+
     app = create_app(data)
     print(f"Dashboard at http://localhost:{port}")
-    app.run(debug=False, port=port)
+    app.run(debug=True, port=port)
 
 
 def main() -> None:
