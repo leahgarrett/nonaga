@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Not found</h1>
+<p class="meta">{{ message }}</p>
+{% if hint %}<p style="margin-top:12px;font-size:13px;color:#555">{{ hint }}</p>{% endif %}
+<p style="margin-top:20px"><a href="/">&larr; Back to leaderboard</a></p>
+{% endblock %}

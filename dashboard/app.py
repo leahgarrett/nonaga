@@ -79,7 +79,9 @@ def create_app(tournament_data: dict) -> Flask:
             if {m["strategy_a"], m["strategy_b"]} == {strategy_a, strategy_b}:
                 return render_template("replay.html", matchup=m,
                                        strategy_a=strategy_a, strategy_b=strategy_b)
-        return "Matchup not found", 404
+        return render_template("error.html",
+            message=f"No data for {strategy_a} vs {strategy_b}.",
+            hint="Re-run the tournament to generate fresh results: python3 run.py --games 100"), 404
 
     @app.route("/api/game/<strategy_a>/<strategy_b>/<int:game_id>")
     def game_data(strategy_a: str, strategy_b: str, game_id: int):
