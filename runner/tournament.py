@@ -90,11 +90,7 @@ def run_matchup(
 
 def run_tournament(strategies: dict[str, Callable], n_games: int = 100) -> dict:
     names = list(strategies.keys())
-    non_random = [n for n in names if n != "random"]
-
-    pairs = [(a, b) for i, a in enumerate(non_random) for b in non_random[i + 1:]]
-    baseline_pairs = [(n, "random") for n in non_random] if "random" in names else []
-    all_pairs = pairs + baseline_pairs
+    all_pairs = [(names[i], names[j]) for i in range(len(names)) for j in range(i + 1, len(names))]
     total_rounds = len(all_pairs)
 
     matchups = []

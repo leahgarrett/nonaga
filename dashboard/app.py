@@ -46,12 +46,15 @@ def _leaderboard(data: dict) -> list[dict]:
 def _matrix(data: dict) -> dict:
     names = data["strategies"]
     cells: dict[str, dict[str, float | None]] = {a: {b: None for b in names} for a in names}
+    avg_turns: dict[str, dict[str, float | None]] = {a: {b: None for b in names} for a in names}
     for m in data["matchups"]:
         a, b = m["strategy_a"], m["strategy_b"]
         n = len(m["games"]) or 1
         cells[a][b] = round(m["summary"]["a_wins"] / n * 100, 1)
         cells[b][a] = round(m["summary"]["b_wins"] / n * 100, 1)
-    return {"names": names, "cells": cells}
+        avg_turns[a][b] = m["summary"]["avg_turns"]
+        avg_turns[b][a] = m["summary"]["avg_turns"]
+    return {"names": names, "cells": cells, "avg_turns": avg_turns}
 
 
 def create_app(tournament_data: dict) -> Flask:
@@ -64,7 +67,7 @@ def create_app(tournament_data: dict) -> Flask:
     @app.route("/matrix")
     def matrix():
         m = _matrix(tournament_data)
-        return render_template("matrix.html", names=m["names"], cells=m["cells"])
+        return render_template("matrix.html", names=m["names"], cells=m["cells"], avg_turns=m["avg_turns"])
 
     @app.route("/matchup/<strategy_a>/<strategy_b>")
     def matchup(strategy_a: str, strategy_b: str):
