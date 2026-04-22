@@ -36,7 +36,7 @@ def cmd_serve(result_path: str | None, port: int) -> None:
 
     data = load_results(result_path) if result_path else load_latest_results(RESULTS_DIR)
     if data is None:
-        print("No results found. Run a tournament first: python run.py")
+        print("No results found. Run a tournament first: python3 run.py")
         sys.exit(1)
 
     app = create_app(data)
