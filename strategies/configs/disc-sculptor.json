@@ -1,0 +1,12 @@
+{
+  "name": "Disc Sculptor",
+  "description": "Focuses entirely on disc placement — reshapes the board to help itself and hurt the opponent",
+  "heuristics": {
+    "cluster_own":    0.2,
+    "block_opponent": 0.1,
+    "prefer_center":  0.1,
+    "disc_help_self": 1.0,
+    "disc_hurt_opp":  1.0,
+    "randomness":     0.05
+  }
+}

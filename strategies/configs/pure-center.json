@@ -1,0 +1,12 @@
+{
+  "name": "Pure Center",
+  "description": "Obsessively moves toward the centre of the board, ignores everything else",
+  "heuristics": {
+    "cluster_own":    0.1,
+    "block_opponent": 0.1,
+    "prefer_center":  1.0,
+    "disc_help_self": 0.2,
+    "disc_hurt_opp":  0.1,
+    "randomness":     0.05
+  }
+}

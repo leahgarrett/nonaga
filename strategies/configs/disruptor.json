@@ -1,0 +1,12 @@
+{
+  "name": "Disruptor",
+  "description": "Ignores own clustering — purely focused on breaking up the opponent's pawns and wrecking their board",
+  "heuristics": {
+    "cluster_own":    0.1,
+    "block_opponent": 1.0,
+    "prefer_center":  0.2,
+    "disc_help_self": 0.1,
+    "disc_hurt_opp":  1.0,
+    "randomness":     0.02
+  }
+}

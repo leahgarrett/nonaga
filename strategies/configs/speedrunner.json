@@ -1,0 +1,12 @@
+{
+  "name": "Speedrunner",
+  "description": "Ignores the opponent entirely — just clusters own pawns as fast as possible",
+  "heuristics": {
+    "cluster_own":    1.0,
+    "block_opponent": 0.0,
+    "prefer_center":  0.0,
+    "disc_help_self": 1.0,
+    "disc_hurt_opp":  0.0,
+    "randomness":     0.02
+  }
+}
