@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ matchup.strategy_a }} vs {{ matchup.strategy_b }}</h1>
+<p class="meta">
+  {{ matchup.summary.a_wins }}W / {{ matchup.summary.b_wins }}L
+  &middot; avg {{ matchup.summary.avg_turns }} turns
+</p>
+
+<div class="game-selector">
+  {% if matchup.summary.best_a_win_game_id is not none %}
+  <button class="gbtn active" onclick="loadGame({{ matchup.summary.best_a_win_game_id }}, this)">Best win</button>
+  {% endif %}
+  {% if matchup.summary.median_a_win_game_id is not none %}
+  <button class="gbtn" onclick="loadGame({{ matchup.summary.median_a_win_game_id }}, this)">Median win</button>
+  {% endif %}
+  {% if matchup.summary.worst_a_win_game_id is not none %}
+  <button class="gbtn" onclick="loadGame({{ matchup.summary.worst_a_win_game_id }}, this)">Worst win</button>
+  {% endif %}
+</div>
+
+<div id="board"></div>
+<div class="controls">
+  <button onclick="goFirst()">&#9198; First</button>
+  <button onclick="goPrev()">&#9664; Prev</button>
+  <button onclick="goNext()">Next &#9654;</button>
+  <button onclick="goLast()">Last &#9197;</button>
+</div>
+<div id="turn-info"></div>
+<div id="move-log" class="move-log"></div>
+
+<script src="/static/board.js"></script>
+<script>
+  const SA = "{{ matchup.strategy_a }}";
+  const SB = "{{ matchup.strategy_b }}";
+  const INIT_ID = {{ matchup.summary.best_a_win_game_id if matchup.summary.best_a_win_game_id is not none else "null" }};
+  document.addEventListener("DOMContentLoaded", () => {
+    if (INIT_ID !== null) {
+      const btn = document.querySelector(".gbtn.active");
+      loadGame(INIT_ID, btn);
+    }
+  });
+</script>
+{% endblock %}

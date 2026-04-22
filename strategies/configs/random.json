@@ -1,0 +1,12 @@
+{
+  "name": "Random",
+  "description": "Picks moves uniformly at random",
+  "heuristics": {
+    "cluster_own": 0.0,
+    "block_opponent": 0.0,
+    "prefer_center": 0.0,
+    "disc_help_self": 0.0,
+    "disc_hurt_opp": 0.0,
+    "randomness": 1.0
+  }
+}
