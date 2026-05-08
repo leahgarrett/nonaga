@@ -32,7 +32,8 @@ test("hexDistance basics", () => {
   assert(!isAdjacent([0, 0], [2, 0]));
 });
 
-test("isConnected: single, adjacent pair, non-adjacent pair, full board", () => {
+test("isConnected: empty, single, adjacent pair, non-adjacent pair, full board", () => {
+  assert(isConnected(new Set()));
   assert(isConnected(new Set(["0,0"])));
   assert(isConnected(new Set(["0,0", "1,0"])));
   assert(!isConnected(new Set(["0,0", "2,0"])));
@@ -68,4 +69,11 @@ test("validPlacements: touches >=2 discs, not in remaining, excludes origin", ()
     const count = hexNeighbors([q, r]).filter(n => remaining.has(key(n))).length;
     assert(count >= 2);
   }
+});
+
+test("validPlacements with default excluded=null does not throw", () => {
+  const remaining = new Set(INITIAL_DISCS);
+  remaining.delete("2,0");
+  const placements = validPlacements(remaining);
+  assert(placements instanceof Set);
 });

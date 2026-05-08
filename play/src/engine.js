@@ -80,7 +80,7 @@ export function validPlacements(discs, excluded = null) {
       if (!discs.has(nk)) candidates.add(nk);
     }
   }
-  if (excluded) candidates.delete(key(excluded));
+  if (excluded !== null) candidates.delete(key(excluded));
   const out = new Set();
   for (const k of candidates) {
     const count = hexNeighbors(parseKey(k))
