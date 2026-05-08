@@ -131,3 +131,50 @@ test("checkWin: line, triangle, tick, spread", () => {
   // Spread (no two adjacent)
   assertEqual(checkWin(mk([[0,0],[2,0],[-2,0]])), null);
 });
+
+import { pawnDestinations, legalMoves } from "../../play/src/engine.js";
+
+test("pawnDestinations: terminal disc only (slide rule)", () => {
+  const s = initialState();
+  // From (2,0): three open directions, each blocked by a black pawn or edge.
+  // Direction (0,-1) -> blocked by black at (2,-2), terminal (2,-1)
+  // Direction (-1,0) -> blocked by black at (-2,0), terminal (-1,0)
+  // Direction (-1,1) -> blocked by black at (0,2),  terminal (1,1)
+  // Other 3 directions step off the board immediately.
+  const dests = new Set(pawnDestinations(s, [2, 0]).map(key));
+  assertSetEqual(dests, ["2,-1", "-1,0", "1,1"]);
+});
+
+test("pawnDestinations: every destination is on a disc and unoccupied", () => {
+  const s = initialState();
+  const all = new Set([...s.redPawns, ...s.blackPawns].map(key));
+  for (const pawn of s.redPawns) {
+    for (const dest of pawnDestinations(s, pawn)) {
+      assert(s.discs.has(key(dest)));
+      assert(!all.has(key(dest)));
+    }
+  }
+});
+
+test("legalMoves count from initial state matches Python (570)", () => {
+  // Cross-language parity guard: the Python engine returns 570.
+  assertEqual(legalMoves(initialState()).length, 570);
+});
+
+test("legalMoves: pawn_from belongs to current player", () => {
+  const s = initialState();
+  const ownKeys = new Set(s.redPawns.map(key));
+  for (const m of legalMoves(s)) {
+    assert(ownKeys.has(key(m.pawnFrom)));
+  }
+});
+
+test("legalMoves: disc_to touches >=2 discs after removal", () => {
+  const s = initialState();
+  for (const m of legalMoves(s)) {
+    const after = new Set(s.discs);
+    after.delete(key(m.discFrom));
+    const count = hexNeighbors(m.discTo).filter(n => after.has(key(n))).length;
+    assert(count >= 2);
+  }
+});

@@ -136,3 +136,72 @@ export function checkWin(state) {
   if (_connected(state.blackPawns)) return "black";
   return null;
 }
+
+export function pawnDestinations(state, pawnPos) {
+  const allPawns = new Set([
+    ...state.redPawns.map(key),
+    ...state.blackPawns.map(key),
+  ]);
+  const dests = [];
+  for (const [dq, dr] of HEX_DIRECTIONS) {
+    let q = pawnPos[0], r = pawnPos[1];
+    let last = null;
+    while (true) {
+      q += dq; r += dr;
+      const k = `${q},${r}`;
+      if (!state.discs.has(k) || allPawns.has(k)) break;
+      last = [q, r];
+    }
+    if (last) dests.push(last);
+  }
+  return dests;
+}
+
+function _discMovesAfterPawn(discs, occupied, lastPlacedDisc) {
+  let removable = removableDiscs(discs, occupied);
+  if (lastPlacedDisc) {
+    const lk = key(lastPlacedDisc);
+    const filtered = new Set(removable);
+    filtered.delete(lk);
+    removable = filtered;
+  }
+  const result = [];
+  for (const fromKey of removable) {
+    const remaining = new Set(discs);
+    remaining.delete(fromKey);
+    const from = parseKey(fromKey);
+    for (const toKey of validPlacements(remaining, from)) {
+      result.push([from, parseKey(toKey)]);
+    }
+  }
+  return result;
+}
+
+export function legalMoves(state) {
+  const pawns = state.currentPlayer === "red" ? state.redPawns : state.blackPawns;
+  const allPawns = new Set([
+    ...state.redPawns.map(key),
+    ...state.blackPawns.map(key),
+  ]);
+  const moves = [];
+  for (let i = 0; i < pawns.length; i++) {
+    const from = pawns[i];
+    for (const to of pawnDestinations(state, from)) {
+      const newOccupied = new Set(allPawns);
+      newOccupied.delete(key(from));
+      newOccupied.add(key(to));
+      for (const [discFrom, discTo] of _discMovesAfterPawn(
+        state.discs, newOccupied, state.lastPlacedDisc,
+      )) {
+        moves.push({
+          pawnIndex: i,
+          pawnFrom: from,
+          pawnTo: to,
+          discFrom,
+          discTo,
+        });
+      }
+    }
+  }
+  return moves;
+}
