@@ -18,7 +18,9 @@ export function assert(cond, msg = "assertion failed") {
 
 // Compares via JSON.stringify — for plain-object equality, both sides
 // must have the same key insertion order. Sort keys first if needed.
+// Same-reference values are always equal (handles circular structures).
 export function assertEqual(actual, expected, msg = "") {
+  if (actual === expected) return;
   const a = JSON.stringify(actual);
   const e = JSON.stringify(expected);
   if (a !== e) throw new Error(`${msg}\n  expected: ${e}\n  actual:   ${a}`);
