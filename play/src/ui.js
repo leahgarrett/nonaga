@@ -72,7 +72,7 @@ function render() {
   if (staging?.phase === "pawn-staged") {
     const occupied = occupiedAfterPawnStage(s);
     const rem = removableDiscs(s.discs, occupied);
-    rem.delete(s.lastPlacedDisc ? key(s.lastPlacedDisc) : "");
+    if (s.lastPlacedDisc) rem.delete(key(s.lastPlacedDisc));
     for (const k of rem) {
       const c = svg.querySelector(`[data-key="${k}"]`);
       if (c) {
@@ -199,8 +199,9 @@ function setStatus(s, isHumanTurn) {
   const status = document.getElementById("status");
   const w = checkWin(s);
   if (w) {
+    const aiName = strategyConfig?.name ?? "AI";
     status.innerHTML = `<span class="banner ${w === humanColor ? "" : "lose"}">${
-      w === humanColor ? "You won!" : strategyConfig.name + " won."
+      w === humanColor ? "You won!" : aiName + " won."
     }</span>`;
     return;
   }
