@@ -89,3 +89,50 @@ export function validPlacements(discs, excluded = null) {
   }
   return out;
 }
+
+const _CORNER_ORDER = [[2,0],[2,-2],[0,-2],[-2,0],[-2,2],[0,2]];
+
+export function initialState(firstPlayer = "red") {
+  return {
+    discs: new Set(INITIAL_DISCS),
+    redPawns:   [_CORNER_ORDER[0], _CORNER_ORDER[2], _CORNER_ORDER[4]],
+    blackPawns: [_CORNER_ORDER[1], _CORNER_ORDER[3], _CORNER_ORDER[5]],
+    currentPlayer: firstPlayer,
+    lastPlacedDisc: null,
+  };
+}
+
+export function applyMove(state, move) {
+  const newDiscs = new Set(state.discs);
+  newDiscs.delete(key(move.discFrom));
+  newDiscs.add(key(move.discTo));
+
+  let red = state.redPawns, black = state.blackPawns;
+  if (state.currentPlayer === "red") {
+    red = red.slice();
+    red[move.pawnIndex] = move.pawnTo;
+  } else {
+    black = black.slice();
+    black[move.pawnIndex] = move.pawnTo;
+  }
+
+  return {
+    discs: newDiscs,
+    redPawns: red,
+    blackPawns: black,
+    currentPlayer: state.currentPlayer === "red" ? "black" : "red",
+    lastPlacedDisc: move.discTo,
+  };
+}
+
+function _connected(pawns) {
+  const [a, b, c] = pawns;
+  const ab = isAdjacent(a, b), bc = isAdjacent(b, c), ac = isAdjacent(a, c);
+  return (ab && bc) || (ab && ac) || (bc && ac);
+}
+
+export function checkWin(state) {
+  if (_connected(state.redPawns)) return "red";
+  if (_connected(state.blackPawns)) return "black";
+  return null;
+}

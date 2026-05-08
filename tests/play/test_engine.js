@@ -77,3 +77,56 @@ test("validPlacements with default excluded=null does not throw", () => {
   const placements = validPlacements(remaining);
   assert(placements instanceof Set);
 });
+
+import {
+  initialState, applyMove, checkWin,
+} from "../../play/src/engine.js";
+
+test("initialState: 19 discs, 3 red, 3 black, all corners covered", () => {
+  const s = initialState();
+  assertEqual(s.discs.size, 19);
+  assertEqual(s.redPawns.length, 3);
+  assertEqual(s.blackPawns.length, 3);
+  const allPawns = new Set([...s.redPawns, ...s.blackPawns].map(key));
+  assertSetEqual(allPawns, INITIAL_CORNERS);
+  assertEqual(s.currentPlayer, "red");
+  assertEqual(s.lastPlacedDisc, null);
+});
+
+test("initialState: corners alternate red/black clockwise", () => {
+  const order = [[2,0],[2,-2],[0,-2],[-2,0],[-2,2],[0,2]];
+  const s = initialState();
+  const red = new Set(s.redPawns.map(key));
+  const black = new Set(s.blackPawns.map(key));
+  const seq = order.map(p => red.has(key(p)) ? "R" : "B");
+  assertEqual(seq, ["R", "B", "R", "B", "R", "B"]);
+});
+
+test("applyMove updates pawn, swaps player, records last_placed_disc", () => {
+  const s = initialState();
+  const move = {
+    pawnIndex: 0,
+    pawnFrom: [2, 0], pawnTo: [-1, 0],
+    discFrom: [1, -2], discTo: [1, 1],
+  };
+  const ns = applyMove(s, move);
+  assertEqual(ns.redPawns[0], [-1, 0]);
+  assert(!ns.discs.has(key([1, -2])));
+  assert(ns.discs.has(key([1, 1])));
+  assertEqual(ns.discs.size, 18);
+  assertEqual(ns.currentPlayer, "black");
+  assertEqual(ns.lastPlacedDisc, [1, 1]);
+});
+
+test("checkWin: line, triangle, tick, spread", () => {
+  const base = initialState();
+  const mk = (red) => ({ ...base, redPawns: red, currentPlayer: "black" });
+  // Line: (0,0)-(1,0)-(2,0)
+  assertEqual(checkWin(mk([[0,0],[1,0],[2,0]])), "red");
+  // Triangle
+  assertEqual(checkWin(mk([[0,0],[1,0],[0,1]])), "red");
+  // Tick
+  assertEqual(checkWin(mk([[0,0],[1,0],[1,-1]])), "red");
+  // Spread (no two adjacent)
+  assertEqual(checkWin(mk([[0,0],[2,0],[-2,0]])), null);
+});
