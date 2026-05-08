@@ -58,7 +58,8 @@ function render() {
   const w = checkWin(s);
   const status = document.getElementById("status");
   if (w) {
-    status.textContent = w === humanColor ? "You won!" : `${strategyConfig.name} won.`;
+    const aiName = strategyConfig?.name ?? "AI";
+    status.textContent = w === humanColor ? "You won!" : `${aiName} won.`;
   } else if (s.currentPlayer === humanColor) {
     status.textContent = "Your turn — pick a pawn.";
   } else {
@@ -91,9 +92,10 @@ async function maybeAITurn() {
 }
 
 // Scrubber wiring
-document.getElementById("btn-first").onclick = () => { tree?.first(); render(); };
-document.getElementById("btn-prev").onclick  = () => { tree?.prev();  render(); };
-document.getElementById("btn-next").onclick  = () => { tree?.next();  render(); };
-document.getElementById("btn-last").onclick  = () => { tree?.last();  render(); };
+const onScrub = (fn) => () => { if (!tree) return; fn(); render(); };
+document.getElementById("btn-first").onclick = onScrub(() => tree.first());
+document.getElementById("btn-prev").onclick  = onScrub(() => tree.prev());
+document.getElementById("btn-next").onclick  = onScrub(() => tree.next());
+document.getElementById("btn-last").onclick  = onScrub(() => tree.last());
 
 document.getElementById("new-game").onclick = newGame;
