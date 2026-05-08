@@ -13,6 +13,8 @@ export function assert(cond, msg = "assertion failed") {
   if (!cond) throw new Error(msg);
 }
 
+// Compares via JSON.stringify — for plain-object equality, both sides
+// must have the same key insertion order. Sort keys first if needed.
 export function assertEqual(actual, expected, msg = "") {
   const a = JSON.stringify(actual);
   const e = JSON.stringify(expected);
@@ -20,8 +22,12 @@ export function assertEqual(actual, expected, msg = "") {
 }
 
 export function assertSetEqual(actual, expected, msg = "") {
-  const a = [...actual].sort();
-  const e = [...expected].sort();
+  const cmp = (a, b) => {
+    const sa = JSON.stringify(a), sb = JSON.stringify(b);
+    return sa < sb ? -1 : sa > sb ? 1 : 0;
+  };
+  const a = [...actual].sort(cmp);
+  const e = [...expected].sort(cmp);
   assertEqual(a, e, msg);
 }
 
