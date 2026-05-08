@@ -23,9 +23,18 @@ let humanColor = "red";
 
 async function newGame() {
   strategyConfig = await loadStrategy(document.getElementById("strategy").value);
-  const colorChoice = document.getElementById("color").value;
+  const sel = document.getElementById("color");
+  let colorChoice = sel.value;
+  // If a previous game just finished and the user didn't change the picker,
+  // flip the default for the next game.
+  if (window._prevHumanColor && colorChoice !== "random" && colorChoice === window._prevHumanColor) {
+    colorChoice = colorChoice === "red" ? "black" : "red";
+    sel.value = colorChoice;
+  }
   humanColor = colorChoice === "random" ? (Math.random() < 0.5 ? "red" : "black") : colorChoice;
+  window._prevHumanColor = humanColor;
   tree = new GameTree(initialState("red"));
+  resetStaging();
   render();
   await maybeAITurn();
 }
@@ -138,10 +147,34 @@ function drawPawns(svg, state, staging) {
         c.classList.add("selectable");
         c.onclick = () => selectPawn(idx, pos);
         if (staging?.phase === "pawn-selected" && staging.pawnIndex === idx) c.classList.add("selected");
+
+        if (document.getElementById("hint").checked && !staging) {
+          c.onmouseenter = () => previewDestinations(pos);
+          c.onmouseleave = () => clearPreview();
+        }
       }
       svg.appendChild(c);
     });
   }
+}
+
+function previewDestinations(pos) {
+  const svg = document.querySelector("#board svg");
+  if (!svg) return;
+  for (const [q, r] of pawnDestinations(tree.current.state, pos)) {
+    const [px, py] = axialToPixel(q, r);
+    const c = document.createElementNS(SVG_NS, "circle");
+    c.setAttribute("cx", px); c.setAttribute("cy", py); c.setAttribute("r", SIZE - 6);
+    c.classList.add("preview");
+    c.setAttribute("fill", "transparent");
+    c.setAttribute("stroke", "#aaa");
+    c.setAttribute("stroke-dasharray", "2 2");
+    c.setAttribute("pointer-events", "none");
+    svg.appendChild(c);
+  }
+}
+function clearPreview() {
+  document.querySelectorAll(".preview").forEach(el => el.remove());
 }
 
 function occupiedAfterPawnStage(state) {
