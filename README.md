@@ -42,6 +42,19 @@ Then open http://localhost:5000 in your browser.
 - `/matrix` — head-to-head win rate matrix (click a cell to replay)
 - `/matchup/<a>/<b>` — step-through game replay with best/median/worst win selector
 
+## Play in the browser
+
+A static play page is available at `play/index.html`. To play locally:
+
+```bash
+python3 -m http.server 8000
+# then open http://localhost:8000/play/
+```
+
+Or via the Flask dashboard at `http://localhost:5000/play/`.
+
+The page is fully static — drop the repo onto GitHub Pages and `play/index.html` works as-is.
+
 ## Add a strategy
 
 Drop a JSON file in `strategies/configs/`:

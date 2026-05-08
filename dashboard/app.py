@@ -1,7 +1,10 @@
 # dashboard/app.py
 from __future__ import annotations
 import logging
-from flask import Flask, render_template, jsonify, request
+import os
+from flask import Flask, render_template, jsonify, request, send_from_directory
+
+PLAY_DIR = os.path.join(os.path.dirname(__file__), "..", "play")
 
 
 def _leaderboard(data: dict) -> list[dict]:
@@ -104,5 +107,10 @@ def create_app(tournament_data: dict) -> Flask:
                     if g["game_id"] == game_id:
                         return jsonify(g)
         return jsonify({"error": "not found"}), 404
+
+    @app.route("/play/")
+    @app.route("/play/<path:filename>")
+    def play_static(filename="index.html"):
+        return send_from_directory(PLAY_DIR, filename)
 
     return app
