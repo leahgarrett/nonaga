@@ -1,0 +1,26 @@
+* { box-sizing: border-box; }
+body { font: 14px/1.4 system-ui, sans-serif; margin: 0; padding: 1rem; background: #fafaf7; }
+header h1 { margin: 0 0 .5rem; }
+.controls { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+main { display: grid; grid-template-columns: minmax(360px, 420px) 1fr; gap: 1.5rem; margin-top: 1rem; }
+#board { width: 360px; height: 340px; }
+.scrubber { display: flex; gap: .25rem; margin-top: .5rem; }
+.scrubber button { padding: .25rem .5rem; }
+#status { min-height: 1.4em; margin: .75rem 0; font-weight: 500; }
+#log-area { border-left: 1px solid #ddd; padding-left: 1rem; }
+#move-log { font: 12px/1.5 ui-monospace, monospace; max-height: 60vh; overflow-y: auto; border: 1px solid #eee; padding: .5rem; background: #fff; }
+#move-log .active { background: #ffe; }
+.hint { display: block; margin-top: .75rem; font-size: 12px; color: #555; }
+.banner { padding: .5rem; background: #efe; border: 1px solid #cfc; }
+.banner.lose { background: #fee; border-color: #fcc; }
+/* SVG */
+.disc { fill: #e8dfd0; stroke: #b0a090; stroke-width: 1.5; }
+.disc.last-placed { stroke: #888; stroke-dasharray: 3 2; }
+.disc.removable { cursor: pointer; stroke: #4a7; stroke-width: 2.5; }
+.disc.placement { cursor: pointer; fill: #d4f0d4; }
+.pawn-red { fill: #c0392b; stroke: #922b21; stroke-width: 2; }
+.pawn-black { fill: #2c2c2c; stroke: #000; stroke-width: 2; }
+.pawn.selectable { cursor: pointer; }
+.pawn.selected { stroke-width: 4; stroke: #f1c40f; }
+.pawn.ghost { opacity: .5; stroke-dasharray: 3 2; }
+.dest { cursor: pointer; fill: #ffd; stroke: #aa8; stroke-dasharray: 2 2; }

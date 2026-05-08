@@ -1,0 +1,46 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Nonaga — Play</title>
+<link rel="stylesheet" href="play.css">
+<header>
+  <h1>Nonaga — Play</h1>
+  <div class="controls">
+    <label>Strategy
+      <select id="strategy">
+        <option>aggressive</option>
+        <option>defensive</option>
+        <option>disc-sculptor</option>
+        <option>disruptor</option>
+        <option selected>pure-center</option>
+        <option>random</option>
+        <option>speedrunner</option>
+      </select>
+    </label>
+    <label>Color
+      <select id="color">
+        <option value="red" selected>Red (you go first)</option>
+        <option value="black">Black (AI goes first)</option>
+        <option value="random">Random</option>
+      </select>
+    </label>
+    <button id="new-game">New game</button>
+  </div>
+</header>
+<main>
+  <section id="board-area">
+    <div id="board"></div>
+    <div class="scrubber">
+      <button id="btn-first">⏮</button>
+      <button id="btn-prev">⏪</button>
+      <button id="btn-next">⏩</button>
+      <button id="btn-last">⏭</button>
+    </div>
+    <p id="status">Click "New game" to start.</p>
+  </section>
+  <aside id="log-area">
+    <h2>Move log</h2>
+    <div id="move-log"></div>
+    <label class="hint"><input type="checkbox" id="hint"> Hint: preview slide destinations on hover</label>
+  </aside>
+</main>
+<script type="module" src="src/ui.js"></script>
