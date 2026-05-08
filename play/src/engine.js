@@ -95,8 +95,8 @@ const _CORNER_ORDER = [[2,0],[2,-2],[0,-2],[-2,0],[-2,2],[0,2]];
 export function initialState(firstPlayer = "red") {
   return {
     discs: new Set(INITIAL_DISCS),
-    redPawns:   [_CORNER_ORDER[0], _CORNER_ORDER[2], _CORNER_ORDER[4]],
-    blackPawns: [_CORNER_ORDER[1], _CORNER_ORDER[3], _CORNER_ORDER[5]],
+    redPawns:   [_CORNER_ORDER[0].slice(), _CORNER_ORDER[2].slice(), _CORNER_ORDER[4].slice()],
+    blackPawns: [_CORNER_ORDER[1].slice(), _CORNER_ORDER[3].slice(), _CORNER_ORDER[5].slice()],
     currentPlayer: firstPlayer,
     lastPlacedDisc: null,
   };

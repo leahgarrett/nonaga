@@ -113,6 +113,7 @@ test("applyMove updates pawn, swaps player, records last_placed_disc", () => {
   assertEqual(ns.redPawns[0], [-1, 0]);
   assert(!ns.discs.has(key([1, -2])));
   assert(ns.discs.has(key([1, 1])));
+  // discTo [1,1] is already in INITIAL_DISCS, so net size is 18 not 19
   assertEqual(ns.discs.size, 18);
   assertEqual(ns.currentPlayer, "black");
   assertEqual(ns.lastPlacedDisc, [1, 1]);
