@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Nonaga play tests</title>
+<style>
+  body { font: 14px/1.4 system-ui, sans-serif; padding: 1rem; }
+  .ok { color: #2a7a2a; }
+  .fail { color: #b22; }
+  pre { background: #f4f4f4; padding: .5rem; }
+</style>
+<h1>Nonaga play tests</h1>
+<div id="results">Running…</div>
+<script type="module">
+  import { report } from "./test_runner.js";
+  // Each test module pushes results when imported.
+  await import("./test_engine.js").catch(e => console.error(e));
+  await import("./test_strategies.js").catch(e => console.error(e));
+  await import("./test_game_tree.js").catch(e => console.error(e));
+  report();
+</script>
