@@ -1,12 +1,15 @@
 const results = [];
+const pending = [];
 
 export function test(name, fn) {
-  try {
-    fn();
-    results.push({ name, ok: true });
-  } catch (err) {
-    results.push({ name, ok: false, err: err.message || String(err) });
-  }
+  pending.push((async () => {
+    try {
+      await fn();
+      results.push({ name, ok: true });
+    } catch (err) {
+      results.push({ name, ok: false, err: err.message || String(err) });
+    }
+  })());
 }
 
 export function assert(cond, msg = "assertion failed") {
@@ -31,7 +34,8 @@ export function assertSetEqual(actual, expected, msg = "") {
   assertEqual(a, e, msg);
 }
 
-export function report() {
+export async function report() {
+  await Promise.all(pending);
   const passed = results.filter(r => r.ok).length;
   const total = results.length;
   if (typeof document !== "undefined") {
