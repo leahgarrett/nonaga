@@ -10,13 +10,14 @@ def pawn_destinations(
     destinations = []
     for dq, dr in HEX_DIRECTIONS:
         q, r = pawn_pos
+        last: tuple[int, int] | None = None
         while True:
             q, r = q + dq, r + dr
-            if (q, r) not in state.discs:
+            if (q, r) not in state.discs or (q, r) in all_pawns:
                 break
-            if (q, r) in all_pawns:
-                break
-            destinations.append((q, r))
+            last = (q, r)
+        if last is not None:
+            destinations.append(last)
     return destinations
 
 

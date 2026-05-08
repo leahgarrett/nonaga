@@ -24,6 +24,20 @@ def test_pawn_destinations_no_pawn_on_dest():
             assert dest not in all_pawns
 
 
+def test_pawn_slides_to_terminal_position_only():
+    # Per Nonaga rules, a pawn must slide as far as it can in the chosen
+    # direction until it hits the board edge or another pawn — it cannot
+    # stop at an intermediate disc.
+    state = initial_state(first_player="red")
+    # From red corner (2, 0), the only legal landings are the terminal
+    # positions in each open direction:
+    #   - direction (0, -1): blocked by black at (2, -2), terminal = (2, -1)
+    #   - direction (-1, 0): blocked by black at (-2, 0),  terminal = (-1, 0)
+    #   - direction (-1, 1): blocked by black at (0, 2),   terminal = (1, 1)
+    # All other directions step off the board immediately.
+    assert set(pawn_destinations(state, (2, 0))) == {(2, -1), (-1, 0), (1, 1)}
+
+
 def test_disc_moves_nonempty():
     state = initial_state()
     occupied = frozenset(state.red_pawns) | frozenset(state.black_pawns)
