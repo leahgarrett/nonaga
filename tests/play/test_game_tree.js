@@ -2,9 +2,10 @@ import { test, assert, assertEqual } from "./test_runner.js";
 import { initialState, applyMove } from "../../play/src/engine.js";
 import { GameTree } from "../../play/src/game-tree.js";
 
-const fakeMove = (suffix) => ({
+// integer suffix varies discTo so successive calls produce distinct moves
+const fakeMove = (discVariant) => ({
   pawnIndex: 0, pawnFrom: [2,0], pawnTo: [-1,0],
-  discFrom: [1,-2], discTo: [1, 1 + suffix],
+  discFrom: [1,-2], discTo: [1, 1 + discVariant],
 });
 
 test("GameTree starts at root with initial state", () => {
@@ -55,4 +56,19 @@ test("mainline log walks from root to deepest descendant via .mainline", () => {
   const log = t.mainlineFromRoot();
   assertEqual(log.length, 3); // root + 2 moves
   assertEqual(log[0], t.root);
+});
+
+test("last() walks the current branch's mainline, not the global latest", () => {
+  const t = new GameTree(initialState());
+  t.playMove(fakeMove(0), applyMove);  // root -> childA
+  const childA = t.current;
+  t.playMove(fakeMove(2), applyMove);  // childA -> grandchildA
+  const grandchildA = t.current;
+  t.first();                            // back to root
+  t.playMove(fakeMove(1), applyMove);  // creates childB; mainline now points to childB
+  // Walk back into the old branch:
+  t.first();
+  t.current = childA;                  // direct seek into old branch
+  t.last();                             // should follow childA's mainline (its only child = grandchildA)
+  assertEqual(t.current, grandchildA);
 });

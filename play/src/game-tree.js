@@ -16,6 +16,7 @@ export class GameTree {
       mainline: null,
     };
     this.current.children.push(next);
+    // replace mainline pointer; old branch stays reachable in children[]
     this.current.mainline = next;
     this.current = next;
     return next;
