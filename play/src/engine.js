@@ -159,7 +159,7 @@ export function pawnDestinations(state, pawnPos) {
 
 function _discMovesAfterPawn(discs, occupied, lastPlacedDisc) {
   let removable = removableDiscs(discs, occupied);
-  if (lastPlacedDisc) {
+  if (lastPlacedDisc !== null) {
     const lk = key(lastPlacedDisc);
     const filtered = new Set(removable);
     filtered.delete(lk);

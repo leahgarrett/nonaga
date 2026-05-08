@@ -132,6 +132,7 @@ test("checkWin: line, triangle, tick, spread", () => {
   assertEqual(checkWin(mk([[0,0],[2,0],[-2,0]])), null);
 });
 
+// move-generation tests
 import { pawnDestinations, legalMoves } from "../../play/src/engine.js";
 
 test("pawnDestinations: terminal disc only (slide rule)", () => {
@@ -148,7 +149,7 @@ test("pawnDestinations: terminal disc only (slide rule)", () => {
 test("pawnDestinations: every destination is on a disc and unoccupied", () => {
   const s = initialState();
   const all = new Set([...s.redPawns, ...s.blackPawns].map(key));
-  for (const pawn of s.redPawns) {
+  for (const pawn of [...s.redPawns, ...s.blackPawns]) {
     for (const dest of pawnDestinations(s, pawn)) {
       assert(s.discs.has(key(dest)));
       assert(!all.has(key(dest)));
